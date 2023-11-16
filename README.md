@@ -3,7 +3,9 @@ Forecasting time series data using different models, including linear regression
 
 ## Seting up the container
 1- Clone the github repository.
+
 2- Open a terminal in the directory containing the repository.
+
 3- Write the command: docker compose up
 
 ## Getting the datasets with their corresponding input values
