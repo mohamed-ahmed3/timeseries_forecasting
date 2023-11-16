@@ -6,7 +6,7 @@ Forecasting time series data using different models, including linear regression
 
 2- Open a terminal in the directory containing the repository.
 
-3- Write the command: docker compose up
+3- Run the command: docker compose up
 
 ## Getting the datasets with their corresponding input values
 To list all the datasets with their corresponding lagged values, send a get request with the following url: http://localhost:8086/timeseries_api/datasets/
