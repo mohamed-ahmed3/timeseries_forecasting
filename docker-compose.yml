@@ -1,0 +1,14 @@
+version: '3'
+services:
+  forecasting_service:
+    build:
+      context: .
+    ports:
+      - 8086:8086
+    volumes:
+      - ./timeseries_api/migrations:/app/timeseries_api/migrations
+      - ./:/app
+    environment:
+      - DEBUG=True
+volumes: 
+  pgdata:
