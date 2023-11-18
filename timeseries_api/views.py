@@ -62,6 +62,9 @@ class ForecastPrediction(APIView):
             historical_df = pd.read_csv(dataset.file.path, parse_dates=['timestamp'])
             historical_df = historical_df.ffill()
 
+            time_difference_train = pd.to_datetime(historical_df['timestamp'].iloc[1]) - pd.to_datetime(
+                historical_df['timestamp'].iloc[0])
+
             df = create_features(historical_df)
 
             number_of_lagged_features = dataset.input_values
@@ -76,7 +79,20 @@ class ForecastPrediction(APIView):
 
             lagged_df = pd.DataFrame(lagged_values)
 
-            lagged_df = lagged_df.ffill()
+            lagged_df['value'] = lagged_df['value'].fillna(lagged_df['value'].mean())
+
+            lagged_df = lagged_df.loc[:, ['timestamp', 'value']]
+
+            if pd.isna(lagged_df['timestamp'].iloc[0]):
+                lagged_df['timestamp'].iloc[0] = (
+                        pd.to_datetime(lagged_df['timestamp'].bfill()).iloc[0] - time_difference_train
+                )
+
+            if lagged_df['timestamp'].isna().any():
+                nan_rows = lagged_df['timestamp'].isna()
+                lagged_df.loc[nan_rows, 'timestamp'] = (
+                        pd.to_datetime(lagged_df['timestamp'].ffill()) + time_difference_train
+                )
 
             last_timestamp = lagged_df['timestamp'].iloc[-1]
 
