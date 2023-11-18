@@ -76,6 +76,8 @@ class ForecastPrediction(APIView):
 
             lagged_df = pd.DataFrame(lagged_values)
 
+            lagged_df = lagged_df.ffill()
+
             last_timestamp = lagged_df['timestamp'].iloc[-1]
 
             last_timestamp_datetime = pd.to_datetime(last_timestamp)
