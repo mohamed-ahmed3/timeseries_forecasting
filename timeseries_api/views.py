@@ -60,11 +60,24 @@ class ForecastPrediction(APIView):
 
         else:
             historical_df = pd.read_csv(dataset.file.path, parse_dates=['timestamp'])
-            historical_df = historical_df.ffill()
-            historical_df.rename(columns={'timestamp': 'time'}, inplace=True)
 
-            time_difference_train = pd.to_datetime(historical_df['time'].iloc[1]) - pd.to_datetime(
-                historical_df['time'].iloc[0])
+            time_difference_train = pd.to_datetime(historical_df['timestamp'].iloc[1]) - pd.to_datetime(
+                historical_df['timestamp'].iloc[0])
+
+            historical_df['value'] = historical_df['value'].fillna(historical_df['value'].mean())
+
+            if pd.isna(historical_df['timestamp'].iloc[0]):
+                historical_df['timestamp'].iloc[0] = (
+                        pd.to_datetime(historical_df['timestamp'].bfill()).iloc[0] - time_difference_train
+                )
+
+            if historical_df['timestamp'].isna().any():
+                nan_rows = historical_df['timestamp'].isna()
+                historical_df.loc[nan_rows, 'timestamp'] = (
+                        pd.to_datetime(historical_df['timestamp'].ffill()) + time_difference_train
+                )
+
+            historical_df.rename(columns={'timestamp': 'time'}, inplace=True)
 
             df = create_features(historical_df)
 
