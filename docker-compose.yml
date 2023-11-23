@@ -10,5 +10,5 @@ services:
       - ./:/app
     environment:
       - DEBUG=True
-volumes: 
+volumes:
   pgdata:

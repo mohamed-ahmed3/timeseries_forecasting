@@ -61,9 +61,10 @@ class ForecastPrediction(APIView):
         else:
             historical_df = pd.read_csv(dataset.file.path, parse_dates=['timestamp'])
             historical_df = historical_df.ffill()
+            historical_df.rename(columns={'timestamp': 'time'}, inplace=True)
 
-            time_difference_train = pd.to_datetime(historical_df['timestamp'].iloc[1]) - pd.to_datetime(
-                historical_df['timestamp'].iloc[0])
+            time_difference_train = pd.to_datetime(historical_df['time'].iloc[1]) - pd.to_datetime(
+                historical_df['time'].iloc[0])
 
             df = create_features(historical_df)
 
@@ -81,29 +82,29 @@ class ForecastPrediction(APIView):
 
             lagged_df['value'] = lagged_df['value'].fillna(lagged_df['value'].mean())
 
-            lagged_df = lagged_df.loc[:, ['timestamp', 'value']]
+            lagged_df = lagged_df.loc[:, ['time', 'value']]
 
-            if pd.isna(lagged_df['timestamp'].iloc[0]):
-                lagged_df['timestamp'].iloc[0] = (
-                        pd.to_datetime(lagged_df['timestamp'].bfill()).iloc[0] - time_difference_train
+            if pd.isna(lagged_df['time'].iloc[0]):
+                lagged_df['time'].iloc[0] = (
+                        pd.to_datetime(lagged_df['time'].bfill()).iloc[0] - time_difference_train
                 )
 
-            if lagged_df['timestamp'].isna().any():
-                nan_rows = lagged_df['timestamp'].isna()
-                lagged_df.loc[nan_rows, 'timestamp'] = (
-                        pd.to_datetime(lagged_df['timestamp'].ffill()) + time_difference_train
+            if lagged_df['time'].isna().any():
+                nan_rows = lagged_df['time'].isna()
+                lagged_df.loc[nan_rows, 'time'] = (
+                        pd.to_datetime(lagged_df['time'].ffill()) + time_difference_train
                 )
 
-            last_timestamp = lagged_df['timestamp'].iloc[-1]
+            last_timestamp = lagged_df['time'].iloc[-1]
 
             last_timestamp_datetime = pd.to_datetime(last_timestamp)
 
-            time_difference = pd.to_datetime(lagged_df['timestamp'].iloc[1]) - pd.to_datetime(
-                lagged_df['timestamp'].iloc[0])
+            time_difference = pd.to_datetime(lagged_df['time'].iloc[1]) - pd.to_datetime(
+                lagged_df['time'].iloc[0])
 
             next_timestamp = last_timestamp_datetime + time_difference
 
-            new_row = pd.DataFrame({'timestamp': [next_timestamp], 'value': [None]})
+            new_row = pd.DataFrame({'time': [next_timestamp], 'value': [None]})
 
             lagged_df = pd.concat([lagged_df, new_row], ignore_index=True)
 
@@ -114,7 +115,7 @@ class ForecastPrediction(APIView):
 
             y_test = test_df["value"]
             feature_cols = [col for col in test_df.columns if col != "value"]
-            feature_cols = [col for col in feature_cols if col != "timestamp"]
+            feature_cols = [col for col in feature_cols if col != "time"]
             x_test = test_df[feature_cols]
             X_test_selected = x_test[selected_features]
 

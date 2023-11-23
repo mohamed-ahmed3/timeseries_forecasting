@@ -19,7 +19,7 @@ def extract_important_features(x_train, y):
 def split(dataframe):
     y = dataframe["value"]
     feature_cols = [col for col in dataframe.columns if col != "value"]
-    feature_cols = [col for col in feature_cols if col != "timestamp"]
+    feature_cols = [col for col in feature_cols if col != "time"]
     x = dataframe[feature_cols]
     x_train, x_valid, y_train, y_valid = train_test_split(x, y, random_state=0, train_size=.8)
 
@@ -33,16 +33,16 @@ def create_features(dataframe):
 
         df.drop("anomaly", axis=1, inplace=True)
 
-    df['timestamp'] = pd.to_datetime(df['timestamp'])
-    df['hour'] = df['timestamp'].dt.hour
+    df['time'] = pd.to_datetime(df['time'])
+    df['hour'] = df['time'].dt.hour
 
-    df['day_of_week'] = df['timestamp'].dt.day_of_week
+    df['day_of_week'] = df['time'].dt.day_of_week
 
-    df['quarter'] = df['timestamp'].dt.quarter
+    df['quarter'] = df['time'].dt.quarter
 
-    df['month'] = df['timestamp'].dt.month
+    df['month'] = df['time'].dt.month
 
-    df['year'] = df['timestamp'].dt.year
+    df['year'] = df['time'].dt.year
 
     num_observations = len(df)
     period = int(num_observations / 2)
