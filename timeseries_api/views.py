@@ -136,4 +136,4 @@ class ForecastPrediction(APIView):
 
             predicted_next_value = y_predictions[-1].item()
 
-            return JsonResponse({'prediction ': predicted_next_value})
+            return JsonResponse({'prediction': predicted_next_value})
