@@ -112,6 +112,11 @@ class ForecastPrediction(APIView):
 
             lagged_df = lagged_df.loc[:, ['time', 'value']]
 
+            historical_df = pd.read_csv(dataset.file.path, parse_dates=['timestamp'])
+
+            time_difference_train = pd.to_datetime(historical_df['timestamp'].iloc[1]) - pd.to_datetime(
+                historical_df['timestamp'].iloc[0])
+
             if pd.isna(lagged_df['time'].iloc[0]):
                 lagged_df['time'].iloc[0] = (
                         pd.to_datetime(lagged_df['time'].bfill()).iloc[0] - time_difference_train
@@ -127,10 +132,7 @@ class ForecastPrediction(APIView):
 
             last_timestamp_datetime = pd.to_datetime(last_timestamp)
 
-            time_difference = pd.to_datetime(lagged_df['time'].iloc[1]) - pd.to_datetime(
-                lagged_df['time'].iloc[0])
-
-            next_timestamp = last_timestamp_datetime + time_difference
+            next_timestamp = last_timestamp_datetime + time_difference_train
 
             new_row = pd.DataFrame({'time': [next_timestamp], 'value': [None]})
 
