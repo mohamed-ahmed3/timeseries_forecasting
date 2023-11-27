@@ -5,15 +5,22 @@ import pandas as pd
 
 from lagged_features_extraction import calculate_lagged_features
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.feature_selection import SelectKBest, mutual_info_regression
+
+from timeseries_api.models import *
 
 
 def extract_important_features(x_train, y):
-    rf_model = RandomForestRegressor()
-    rf_model.fit(x_train, y)
-    feature_importances = pd.Series(rf_model.feature_importances_, index=x_train.columns)
-    significant_features = feature_importances[feature_importances > 0.004].index
+    selector = SelectKBest(score_func=mutual_info_regression, k='all')
+    x_train_selected = selector.fit_transform(x_train, y)
+    selected_feature_indices = selector.get_support(indices=True)
+    selected_features = x_train.columns[selected_feature_indices]
 
-    return significant_features
+    for feature_name in selected_features:
+        feature_entry = SelectedFeature(feature_name=feature_name)
+        feature_entry.save()
+
+    return selected_features
 
 
 def split(dataframe):

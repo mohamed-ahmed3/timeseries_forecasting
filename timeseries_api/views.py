@@ -6,6 +6,7 @@ from django.db import transaction
 from django.http import HttpResponse
 import json
 from django.http import JsonResponse
+import pickle
 
 from .serializers import *
 from upload_datasets import upload_all_datasets
@@ -32,33 +33,15 @@ class UploadDatasets(APIView):
             return HttpResponse(f'Error decoding JSON: {str(e)}', status=400)
 
         upload_all_datasets(path)
+
         return HttpResponse('POST request processed successfully')
 
 
-class ForecastPrediction(APIView):
+class SaveModel(APIView):
     @transaction.atomic
     def post(self, request):
-        body = request.body
 
-        try:
-            json_data = json.loads(body)
-
-            id = json_data['dataset_id']
-            lagged_values = json_data["values"]
-
-        except json.JSONDecodeError as e:
-            return HttpResponse(f'Error decoding JSON: {str(e)}', status=400)
-
-        try:
-            dataset = TimeSeriesDatasets.objects.get(dataset_id=id)
-
-        except TimeSeriesDatasets.DoesNotExist:
-            return JsonResponse({'error': 'Dataset not found'}, status=404)
-
-        if len(lagged_values) != dataset.input_values:
-            return JsonResponse({'Please, enter correct number of lagged values ': dataset.input_values})
-
-        else:
+        for dataset in TimeSeriesDatasets.objects.all():
             historical_df = pd.read_csv(dataset.file.path, parse_dates=['timestamp'])
 
             time_difference_train = pd.to_datetime(historical_df['timestamp'].iloc[1]) - pd.to_datetime(
@@ -87,9 +70,41 @@ class ForecastPrediction(APIView):
 
             X_train, X_valid, y_train, y_valid = split(df)
 
-            selected_features = extract_important_features(X_train, y_train)
+            model = xgb_model_predictions(X_train, y_train)
 
-            X_train_selected = X_train[selected_features]
+            serialized_model = pickle.dumps(model)
+
+            dataset.model = serialized_model
+
+            dataset.save()
+
+        return HttpResponse('POST request processed successfully')
+
+
+class ForecastPrediction(APIView):
+    @transaction.atomic
+    def post(self, request):
+        body = request.body
+
+        try:
+            json_data = json.loads(body)
+
+            id = json_data['dataset_id']
+            lagged_values = json_data["values"]
+
+        except json.JSONDecodeError as e:
+            return HttpResponse(f'Error decoding JSON: {str(e)}', status=400)
+
+        try:
+            dataset = TimeSeriesDatasets.objects.get(dataset_id=id)
+
+        except TimeSeriesDatasets.DoesNotExist:
+            return JsonResponse({'error': 'Dataset not found'}, status=404)
+
+        if len(lagged_values) != dataset.input_values:
+            return JsonResponse({'Please, enter correct number of lagged values ': dataset.input_values})
+
+        else:
 
             lagged_df = pd.DataFrame(lagged_values)
 
@@ -124,15 +139,18 @@ class ForecastPrediction(APIView):
             lagged_df['value'].iloc[-1] = lagged_df['value'].mean()
 
             test_df = create_features(lagged_df)
+            number_of_lagged_features = dataset.input_values
             test_df = add_lagged_values(test_df, number_of_lagged_features)
 
             y_test = test_df["value"]
             feature_cols = [col for col in test_df.columns if col != "value"]
             feature_cols = [col for col in feature_cols if col != "time"]
-            x_test = test_df[feature_cols]
-            X_test_selected = x_test[selected_features]
+            X_test = test_df[feature_cols]
 
-            y_predictions = xgb_model_predictions(X_train_selected, y_train, X_test_selected)
+            model = dataset.model
+
+            loaded_model = pickle.loads(model)
+            y_predictions = loaded_model.predict(X_test)
 
             predicted_next_value = y_predictions[-1].item()
 

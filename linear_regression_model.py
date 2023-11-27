@@ -21,10 +21,9 @@ def linear_model_predictions(x_train, y_train, x_valid):
     return y_predicted
 
 
-def xgb_model_predictions(x_train, y_train, x_valid):
+def xgb_model_predictions(x_train, y_train):
     model = xgb.XGBRegressor()
 
     model.fit(x_train, y_train)
-    y_predicted = model.predict(x_valid)
 
-    return y_predicted
+    return model

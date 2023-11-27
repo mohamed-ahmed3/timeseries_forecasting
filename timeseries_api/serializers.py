@@ -10,3 +10,11 @@ class TimeSeriesSerializer(serializers.ModelSerializer):
             'file',
             'input_values'
         ]
+
+
+class SelectedFeaturesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SelectedFeature
+        fields = [
+            'feature_name'
+        ]
