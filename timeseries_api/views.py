@@ -42,6 +42,7 @@ class SaveModel(APIView):
     def post(self, request):
 
         for dataset in TimeSeriesDatasets.objects.all():
+
             historical_df = pd.read_csv(dataset.file.path, parse_dates=['timestamp'])
 
             time_difference_train = pd.to_datetime(historical_df['timestamp'].iloc[1]) - pd.to_datetime(
@@ -70,7 +71,16 @@ class SaveModel(APIView):
 
             X_train, X_valid, y_train, y_valid = split(df)
 
-            model = xgb_model_predictions(X_train, y_train)
+            selected_features = extract_important_features(X_train, y_train)
+
+            significant_features_list = list(selected_features)
+
+            dataset.selected_features = significant_features_list
+            dataset.save()
+
+            X_train_selected = X_train[selected_features]
+
+            model = xgb_model_predictions(X_train_selected, y_train)
 
             serialized_model = pickle.dumps(model)
 
@@ -149,10 +159,14 @@ class ForecastPrediction(APIView):
             feature_cols = [col for col in feature_cols if col != "time"]
             X_test = test_df[feature_cols]
 
+            significant_features_list = dataset.selected_features
+
+            X_test_selected = X_test[significant_features_list]
+
             model = dataset.model
 
             loaded_model = pickle.loads(model)
-            y_predictions = loaded_model.predict(X_test)
+            y_predictions = loaded_model.predict(X_test_selected)
 
             predicted_next_value = y_predictions[-1].item()
 

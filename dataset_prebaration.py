@@ -16,10 +16,6 @@ def extract_important_features(x_train, y):
     feature_importances = pd.Series(rf_model.feature_importances_, index=x_train.columns)
     significant_features = feature_importances[feature_importances > 0.004]
 
-    for feature_name in significant_features.index:
-        feature_entry = SelectedFeature(feature_name=feature_name)
-        feature_entry.save()
-
     return significant_features.index
 
 

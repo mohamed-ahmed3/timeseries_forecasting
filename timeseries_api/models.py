@@ -6,7 +6,5 @@ class TimeSeriesDatasets(models.Model):
     file = models.FileField()
     input_values = models.IntegerField(editable=False, null=True)
     model = models.BinaryField(null=True)
+    selected_features = models.JSONField(null=True, blank=True)
 
-
-class SelectedFeature(models.Model):
-    feature_name = models.CharField(max_length=255)

@@ -8,13 +8,10 @@ class TimeSeriesSerializer(serializers.ModelSerializer):
         fields = [
             'dataset_id',
             'file',
-            'input_values'
+            'input_values',
+            'model',
+            'selected_features'
         ]
 
 
-class SelectedFeaturesSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = SelectedFeature
-        fields = [
-            'feature_name'
-        ]
+
