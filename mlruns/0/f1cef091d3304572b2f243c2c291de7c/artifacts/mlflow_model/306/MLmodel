@@ -1,0 +1,38 @@
+artifact_path: mlflow_model/306
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.11.5
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.3.1
+mlflow_version: 2.8.1
+model_size_bytes: 3414466
+model_uuid: d097949dfae446a3a9a645887a65ec73
+run_id: f1cef091d3304572b2f243c2c291de7c
+saved_input_example_info:
+  artifact_path: input_example.json
+  pandas_orient: split
+  type: dataframe
+signature:
+  inputs: '[{"type": "integer", "name": "hour"}, {"type": "integer", "name": "month"},
+    {"type": "double", "name": "trend"}, {"type": "double", "name": "lag_1"}, {"type":
+    "double", "name": "lag_2"}, {"type": "double", "name": "lag_3"}, {"type": "double",
+    "name": "lag_4"}, {"type": "double", "name": "lag_5"}, {"type": "double", "name":
+    "lag_6"}, {"type": "double", "name": "lag_7"}, {"type": "double", "name": "lag_8"},
+    {"type": "double", "name": "lag_9"}, {"type": "double", "name": "lag_10"}, {"type":
+    "double", "name": "lag_11"}, {"type": "double", "name": "lag_12"}, {"type": "double",
+    "name": "lag_13"}, {"type": "double", "name": "lag_14"}, {"type": "double", "name":
+    "lag_15"}, {"type": "double", "name": "lag_16"}, {"type": "double", "name": "lag_17"},
+    {"type": "double", "name": "lag_18"}, {"type": "double", "name": "lag_19"}, {"type":
+    "double", "name": "lag_20"}, {"type": "double", "name": "lag_21"}]'
+  outputs: '[{"type": "float"}]'
+  params: null
+utc_time_created: '2023-12-03 20:50:42.540819'

@@ -1,0 +1,30 @@
+artifact_path: mlflow_model/119
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.11.5
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.3.1
+mlflow_version: 2.8.1
+model_size_bytes: 99636
+model_uuid: 9e0fe0026a0a471493136f0c6fb7a57e
+run_id: 874fc6f59cac470e9479852d6c125b4d
+saved_input_example_info:
+  artifact_path: input_example.json
+  pandas_orient: split
+  type: dataframe
+signature:
+  inputs: '[{"type": "integer", "name": "day_of_week"}, {"type": "double", "name":
+    "trend"}, {"type": "double", "name": "lag_1"}, {"type": "double", "name": "lag_2"},
+    {"type": "double", "name": "lag_3"}]'
+  outputs: '[{"type": "float"}]'
+  params: null
+utc_time_created: '2023-12-03 20:18:17.518657'

@@ -20,4 +20,5 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('timeseries_api/', include("timeseries_api.urls")),
+    path('inference_api/', include("inference_api.urls"))
 ]

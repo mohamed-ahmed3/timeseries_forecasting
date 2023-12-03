@@ -1,0 +1,30 @@
+artifact_path: mlflow_model/204
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.11.5
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.3.1
+mlflow_version: 2.8.1
+model_size_bytes: 287714
+model_uuid: 960f5a5ba5894925af7ca85161bb0d89
+run_id: ae2bef4553ac477ba8f5bde24ca7172b
+saved_input_example_info:
+  artifact_path: input_example.json
+  pandas_orient: split
+  type: dataframe
+signature:
+  inputs: '[{"type": "integer", "name": "quarter"}, {"type": "integer", "name": "month"},
+    {"type": "double", "name": "trend"}, {"type": "double", "name": "lag_1"}, {"type":
+    "double", "name": "lag_2"}, {"type": "double", "name": "lag_3"}]'
+  outputs: '[{"type": "float"}]'
+  params: null
+utc_time_created: '2023-12-03 20:25:26.267090'

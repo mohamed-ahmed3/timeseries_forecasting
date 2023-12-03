@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'timeseries_api'
+    'timeseries_api',
+    'django_extensions',
 ]
 
 MIDDLEWARE = [
